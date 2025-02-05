@@ -1,5 +1,7 @@
 plugins {
     id 'java'
+    id("io.freefair.lombok") version "8.11"
+    id("io.qameta.allure") version "2.12.0"
 }
 
 group = 'org.example'
@@ -12,6 +14,16 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.18.2'
+    testImplementation 'org.aeonbits.owner:owner:1.0.12'
+    testImplementation 'commons-io:commons-io:2.18.0'
+    testImplementation 'io.rest-assured:rest-assured:5.5.0'
+    testImplementation 'io.qameta.allure:allure-rest-assured:2.29.1'
+    testImplementation 'com.github.javafaker:javafaker:1.0.2'
+    testImplementation 'org.assertj:assertj-core:3.27.3'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.28.1'
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.9.2'
 }
 
 test {
