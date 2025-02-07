@@ -11,8 +11,8 @@ public class AccountUtils {
         private static final String LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
         private static final String UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         private static final String DIGITS = "0123456789";
-        private static final String SPECIALS = "!@#$%^&*_<>?";
-        //();:,.[]={}+-|
+        private static final String SPECIALS = "@#$%^&*";
+        //();:,.[]={}+-|_<>!?
 
         // Общий набор символов для генерации пароля
         private static final String ALL_CHARS = LOWERCASE + UPPERCASE + DIGITS + SPECIALS;
