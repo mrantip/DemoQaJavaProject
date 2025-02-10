@@ -33,31 +33,4 @@ public class LoginResponseModel{
 	@JsonProperty("username")
 	private String username;
 
-	public String getExpires(){
-		return expires;
-	}
-
-	public String getPassword(){
-		return password;
-	}
-
-	public String getCreatedDate(){
-		return createdDate;
-	}
-
-	public boolean isIsActive(){
-		return isActive;
-	}
-
-	public String getUserId(){
-		return userId;
-	}
-
-	public String getToken(){
-		return token;
-	}
-
-//	public String getUsername(){
-//		return username;
-//	}
 }

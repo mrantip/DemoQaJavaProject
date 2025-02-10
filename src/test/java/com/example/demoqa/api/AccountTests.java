@@ -106,7 +106,7 @@ public class AccountTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")
@@ -137,7 +137,7 @@ public class AccountTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")

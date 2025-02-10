@@ -55,7 +55,7 @@ public class BookStoreTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")
@@ -101,7 +101,7 @@ public class BookStoreTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")
@@ -150,7 +150,7 @@ public class BookStoreTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")
@@ -201,7 +201,7 @@ public class BookStoreTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")
@@ -254,7 +254,7 @@ public class BookStoreTests {
                 .then().extract().as(RegisterViewModel.class);
 
 
-        String UserId = response.getUserId();
+        String UserId = response.getUserID();
         TokenModel token = given().contentType(ContentType.JSON)
                 .body(user)
                 .post("/Account/v1/GenerateToken")
@@ -291,14 +291,21 @@ public class BookStoreTests {
                 .body(bookIsbn)
                 .post("/BookStore/v1/Books");
 
-        RegisterViewModel newBook = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
+//        RegisterViewModel newBook = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
+//                .pathParam("ISBN", isbn)
+//                .body(deleteIsbn)
+//                .put("/BookStore/v1/Books/{ISBN}")
+//                .then().statusCode(200)
+//                .extract().as(RegisterViewModel.class);
+//        Assertions.assertEquals(isbnNew, newBook.getBooks().get(0).getIsbn());
+
+        List<BooksItem> newBook = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
                 .pathParam("ISBN", isbn)
                 .body(deleteIsbn)
                 .put("/BookStore/v1/Books/{ISBN}")
                 .then().statusCode(200)
-                .extract().as(RegisterViewModel.class);
-        Assertions.assertEquals(isbnNew, newBook.getBooks().get(0).getIsbn());
-
+                .extract().jsonPath().getList("books", BooksItem.class);
+        Assertions.assertEquals(isbnNew, newBook.get(0).getIsbn());
     }
 
 

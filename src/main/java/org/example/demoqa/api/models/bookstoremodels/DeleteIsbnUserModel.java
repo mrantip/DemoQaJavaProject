@@ -18,11 +18,4 @@ public class DeleteIsbnUserModel{
 	@JsonProperty("userId")
 	private String userId;
 
-	public String getIsbn(){
-		return isbn;
-	}
-
-	public String getUserId(){
-		return userId;
-	}
 }

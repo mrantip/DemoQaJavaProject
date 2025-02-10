@@ -18,11 +18,4 @@ public class BookDeleteResultModel{
 	@JsonProperty("userId")
 	private String userId;
 
-	public String getMessage(){
-		return message;
-	}
-
-	public String getUserId(){
-		return userId;
-	}
 }

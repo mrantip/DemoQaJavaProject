@@ -39,39 +39,4 @@ public class BooksItem{
 	@JsonProperty("publish_date")
 	private String publishDate;
 
-	public String getWebsite(){
-		return website;
-	}
-
-	public int getPages(){
-		return pages;
-	}
-
-	public String getSubTitle(){
-		return subTitle;
-	}
-
-	public String getAuthor(){
-		return author;
-	}
-
-	public String getIsbn(){
-		return isbn;
-	}
-
-	public String getPublisher(){
-		return publisher;
-	}
-
-	public String getDescription(){
-		return description;
-	}
-
-	public String getTitle(){
-		return title;
-	}
-
-	public String getPublishDate(){
-		return publishDate;
-	}
 }

@@ -21,15 +21,4 @@ public class UserBookResultModel{
 	@JsonProperty("userId")
 	private String userId;
 
-	public String getIsbn(){
-		return isbn;
-	}
-
-	public String getMessage(){
-		return message;
-	}
-
-	public String getUserId(){
-		return userId;
-	}
 }

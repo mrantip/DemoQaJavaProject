@@ -18,13 +18,4 @@ public class ReplaceUserModel{
 	@JsonProperty("isbn")
 	private String isbn;
 
-
-
-	public String getIsbn(){
-		return isbn;
-	}
-
-	public String getUserId(){
-		return userId;
-	}
 }

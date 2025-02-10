@@ -15,7 +15,4 @@ public class IsbnModel{
 	@JsonProperty("isbn")
 	private String isbn;
 
-	public String getIsbn(){
-		return isbn;
-	}
 }

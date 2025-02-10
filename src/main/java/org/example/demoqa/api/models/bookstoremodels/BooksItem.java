@@ -19,7 +19,4 @@ public class BooksItem{
 	@JsonProperty("isbn")
 	private String isbn;
 
-	public String getIsbn(){
-		return isbn;
-	}
 }

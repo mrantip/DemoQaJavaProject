@@ -24,19 +24,4 @@ public class TokenModel{
 	@JsonProperty("status")
 	private String status;
 
-	public String getResult(){
-		return result;
-	}
-
-	public String getExpires(){
-		return expires;
-	}
-
-	public String getToken(){
-		return token;
-	}
-
-	public String getStatus(){
-		return status;
-	}
 }

@@ -21,9 +21,4 @@ public class BooksModel{
 	@JsonProperty("books")
 	private List<BooksItem> books;
 
-	public List<BooksItem> getBooks(){
-		return books;
-	}
-
-
 }

@@ -24,15 +24,4 @@ public class RegisterViewModel {
 	@JsonProperty("username")
 	private String username;
 
-	public List<BooksItem> getBooks(){
-		return books;
-	}
-
-	public String getUserId(){
-		return userID;
-	}
-
-	public String getUsername(){
-		return username;
-	}
 }
