@@ -4,8 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import org.example.demoqa.api.models.accountmodels.RegisterUserModel;
+import org.example.demoqa.api.models.accountmodels.UserModel;
 import org.example.demoqa.api.models.accountmodels.RegisterViewModel;
 import org.example.demoqa.api.models.accountmodels.TokenModel;
 import org.example.demoqa.api.models.bookstoremodels.*;
@@ -17,7 +16,6 @@ import java.util.*;
 
 import static io.restassured.RestAssured.given;
 import static org.example.demoqa.api.utils.AccountUtils.PasswordGenerator.generatePassword;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
 
 public class BookStoreTests {
@@ -30,7 +28,7 @@ public class BookStoreTests {
         random = new Random();
     }
     int randomNumber = Math.abs(random.nextInt());
-    RegisterUserModel user = RegisterUserModel.builder()
+    UserModel user = UserModel.builder()
             .userName("serg" + randomNumber)
             .password(generatePassword())
             .build();

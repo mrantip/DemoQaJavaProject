@@ -11,7 +11,7 @@ import lombok.*;
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class RegisterUserModel {
+public class UserModel {
     @JsonProperty("userName")
     private String userName;
     @JsonProperty("password")

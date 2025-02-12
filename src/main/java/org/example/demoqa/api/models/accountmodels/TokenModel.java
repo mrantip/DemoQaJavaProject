@@ -24,4 +24,6 @@ public class TokenModel{
 	@JsonProperty("status")
 	private String status;
 
+	public TokenModel(String userName, String password) {
+	}
 }
