@@ -90,7 +90,7 @@ public class AccountTests extends BaseApiTest{
     }
 
     @Test
-    public void generateTokenTest() {
+    public void positiveGenerateTokenTest() {
         UserModel user = getRandomUser();
         userService.register(user);
 
@@ -106,103 +106,101 @@ public class AccountTests extends BaseApiTest{
 //        Assertions.assertEquals("Success", token.getStatus());
     }
 
-//    @Test
-//    public void positiveAuthoriseUserTest() {
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/User");
-//
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/GenerateToken");
-//
+    @Test
+    public void negativeGenerateTokenTest() {
+        UserModel user = getRandomUser();
+        userService.register(user);
+        user.setPassword(random.nextInt()+"");
+
+        String token = userService.auth(user).should(hasStatusCode(200)).asJwt();
+        Assertions.assertNull(token);
+
+    }
+
+    @Test
+    public void positiveAuthoriseUserTest() {
+        UserModel user = getRandomUser();
+        userService.register(user);
+        userService.auth(user);
+
+        boolean yes = userService.checkAuth(user).should(hasStatusCode(200)).as(Boolean.class);
+        Assertions.assertTrue(yes);
+
+
 //        boolean yes = given().contentType(ContentType.JSON)
 //                .body(user)
 //                .post("/Account/v1/Authorized")
 //                .then().statusCode(200)
 //                .extract().as(Boolean.class);
 //        Assertions.assertTrue(yes);
-//
-//
-//    }
-//
-//    @Test
-//    public void positiveLoginUserTest() {
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/User");
-//
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/GenerateToken");
-//
-//
-//        LoginResponseModel response = given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/Login")
-//                .then().statusCode(200)
-//                .extract().as(LoginResponseModel.class);
-//
-//        Assertions.assertEquals(user.getUserName(), response.getUsername());
-//    }
-//
-//    @Test
-//    public void getUserTest() {
-//        RegisterViewModel response = given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/User")
-//                .then().extract().as(RegisterViewModel.class);
-//
-//
-//        String UserId = response.getUserID();
-//        TokenModel token = given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/GenerateToken")
-//                .then().statusCode(200)
-//                .extract().as(TokenModel.class);
-//
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/Authorized");
-//
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/Login");
-//
-//
-//        RegisterViewModel result = given().auth().oauth2(token.getToken())
-//        .get("/Account/v1/User/{UserId}", UserId)
-//        .then().statusCode(200)
-//        .extract().as(RegisterViewModel.class);
-//        Assertions.assertEquals(user.getUserName(), result.getUsername());
-//    }
-//
-//    @Test
-//    public void deleteUserTest() {
-//        RegisterViewModel response = given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/User")
-//                .then().extract().as(RegisterViewModel.class);
-//
-//
-//        String UserId = response.getUserID();
-//        TokenModel token = given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/GenerateToken")
-//                .then().statusCode(200)
-//                .extract().as(TokenModel.class);
-//
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/Authorized");
-//
-//        given().contentType(ContentType.JSON)
-//                .body(user)
-//                .post("/Account/v1/Login");
-//
-//        given().auth().oauth2(token.getToken())
-//                .delete("/Account/v1/User/{UserId}", UserId)
-//                .then().statusCode(204);
-//
-//    }
+    }
+
+    @Test
+    public void negativeAuthoriseUserTest() {
+        UserModel user = getRandomUser();
+        userService.register(user);
+
+
+        boolean no = userService.checkAuth(user).should(hasStatusCode(200)).as(Boolean.class);
+        Assertions.assertFalse(no);
+    }
+
+    @Test
+    public void positiveLoginUserTest() {
+        UserModel user = getRandomUser();
+        userService.register(user);
+        userService.auth(user);
+
+        LoginResponseModel response = userService.login(user)
+                .should(hasStatusCode(200))
+                .as(LoginResponseModel.class);
+
+        Assertions.assertEquals(user.getUserName(), response.getUsername());
+    }
+
+    @Test
+    public void positiveGetUserTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
+
+        RegisterViewModel result = userService.getUser(token, userId)
+                .should(hasStatusCode(200))
+                .as(RegisterViewModel.class);
+
+        Assertions.assertEquals(user.getUserName(), result.getUsername());
+    }
+
+    @Test
+    public void negativeGetUserTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
+
+        userService.getUser(token, "UserId")
+                .should(hasStatusCode(401))
+                .should(hasMessage("User not found!"));
+
+    }
+
+    @Test
+    public void positiveDeleteUserTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
+
+        userService.deleteUser(token, userId).should(hasStatusCode(204));
+
+    }
+
+    @Test
+    public void negativeDeleteUserTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
+
+        userService.deleteUser(token, "userId").should(hasStatusCode(200))
+                .should(hasMessage("User Id not correct!"));
+
+    }
 }

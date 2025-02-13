@@ -19,6 +19,10 @@ public class AssertableResponse {
         return response.extract().jsonPath().getString("token");
     }
 
+    public String asUserId() {
+        return response.extract().jsonPath().getString("userID");
+    }
+
     public <T> T as(Class<T> tClass) {
         return response.extract().as(tClass);
     }
