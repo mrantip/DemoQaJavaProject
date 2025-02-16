@@ -18,7 +18,14 @@ import lombok.NoArgsConstructor;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BooksModel{
 
+//	@JsonProperty("books")
+//	private List<BooksItem> books;
+
 	@JsonProperty("books")
-	private List<BooksItem> books;
+	private List<BookModel> books;
+
+	public List<BookModel> getBooks(){
+		return books;
+	}
 
 }

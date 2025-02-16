@@ -8,25 +8,36 @@ import org.example.demoqa.api.models.accountmodels.UserModel;
 import org.example.demoqa.api.models.accountmodels.RegisterViewModel;
 import org.example.demoqa.api.models.accountmodels.TokenModel;
 import org.example.demoqa.api.models.bookstoremodels.*;
+import org.example.demoqa.api.services.BookService;
+import org.example.demoqa.api.services.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+
 import static io.restassured.RestAssured.given;
 import static org.example.demoqa.api.utils.AccountUtils.PasswordGenerator.generatePassword;
+import static org.example.demoqa.api.utils.AccountUtils.getRandomUser;
 import static org.hamcrest.Matchers.hasSize;
+import static org.example.demoqa.api.assertions.Conditions.hasMessage;
+import static org.example.demoqa.api.assertions.Conditions.hasStatusCode;
 
 public class BookStoreTests {
     private static Random random;
+    private static UserService userService;
+    private static BookService bookService;
 
     @BeforeAll
     public static void setUp() {
         RestAssured.baseURI = "https://demoqa.com/";
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
         random = new Random();
+        userService = new UserService();
+        bookService = new BookService();
     }
+
     int randomNumber = Math.abs(random.nextInt());
     UserModel user = UserModel.builder()
             .userName("serg" + randomNumber)
@@ -34,260 +45,128 @@ public class BookStoreTests {
             .build();
 
 
-
-
-
     @Test
-    public void getAllBooksTest(){
-        List<String> books = given().get("/BookStore/v1/Books")
-                .then().statusCode(200)
-                .extract().path("books");
+    public void getAllBooksTest() {
+        List<BooksModel> books = bookService.getAllBooks()
+                .should(hasStatusCode(200))
+                .asList("books", BooksModel.class);
+//        List<String> books = given().get("/BookStore/v1/Books")
+//                .then().statusCode(200)
+//                .extract().path("books");
         Assertions.assertFalse(books.isEmpty());
     }
 
     @Test
-    public void postBookTest(){
-        RegisterViewModel response = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/User")
-                .then().extract().as(RegisterViewModel.class);
+    public void postBookTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
 
+        String isbn = bookService.getAllBooks()
+                .as(BooksModel.class).getBooks().get(0).getIsbn();
 
-        String UserId = response.getUserID();
-        TokenModel token = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/GenerateToken")
-                .then().statusCode(200)
-                .extract().as(TokenModel.class);
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Authorized");
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Login");
-
-        BooksModel books = given().get("/BookStore/v1/Books")
-                .then()
-                .extract().as(BooksModel.class);
-
-        List<BooksItem> boo = books.getBooks();
-
-        String isbn = boo.get(0).getIsbn();
         CollectionOfIsbnsItem goodIsbn = new CollectionOfIsbnsItem();
         goodIsbn.setIsbn(isbn);
 
         AddListOfBooksModel bookIsbn = new AddListOfBooksModel();
-        bookIsbn.setUserId(UserId);
+        bookIsbn.setUserId(userId);
         bookIsbn.setCollectionOfIsbns(List.of(goodIsbn));
 
+        BooksIsbnModel resIsbn = bookService.addUserBook(bookIsbn, token)
+                .should(hasStatusCode(201)).as(BooksIsbnModel.class);
 
-        BooksIsbnModel resIsbn = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
-                .body(bookIsbn)
-                .post("/BookStore/v1/Books")
-                .then().statusCode(201)
-                .extract().as(BooksIsbnModel.class);
         Assertions.assertEquals(isbn, resIsbn.getBooks().get(0).getIsbn());
     }
 
     @Test
-    public void deleteUserBookTest(){
-        RegisterViewModel response = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/User")
-                .then().extract().as(RegisterViewModel.class);
+    public void deleteAllUserBooksTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
 
+        String isbn = bookService.getAllBooks()
+                .as(BooksModel.class).getBooks().get(0).getIsbn();
 
-        String UserId = response.getUserID();
-        TokenModel token = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/GenerateToken")
-                .then().statusCode(200)
-                .extract().as(TokenModel.class);
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Authorized");
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Login");
-
-        BooksModel books = given().get("/BookStore/v1/Books")
-                .then()
-                .extract().as(BooksModel.class);
-
-        List<BooksItem> boo = books.getBooks();
-
-        String isbn = boo.get(0).getIsbn();
         CollectionOfIsbnsItem goodIsbn = new CollectionOfIsbnsItem();
         goodIsbn.setIsbn(isbn);
 
         AddListOfBooksModel bookIsbn = new AddListOfBooksModel();
-        bookIsbn.setUserId(UserId);
+        bookIsbn.setUserId(userId);
         bookIsbn.setCollectionOfIsbns(List.of(goodIsbn));
 
+        BooksIsbnModel resIsbn = bookService.addUserBook(bookIsbn, token)
+                .should(hasStatusCode(201)).as(BooksIsbnModel.class);
 
-        given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
-                .body(bookIsbn)
-                .post("/BookStore/v1/Books");
-
-
-        given().auth().oauth2(token.getToken())
-                .queryParam("UserId", UserId)
-                .delete("/BookStore/v1/Books")
-                .then().statusCode(204);
+        bookService.deleteAllUserBooks(userId, token).should(hasStatusCode(204));
     }
 
     @Test
-    public void getAllUserBooksTest(){
-        RegisterViewModel response = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/User")
-                .then().extract().as(RegisterViewModel.class);
+    public void getOneBookTest() {
+        String isbn = bookService.getAllBooks()
+                .as(BooksModel.class).getBooks().get(0).getIsbn();
 
-
-        String UserId = response.getUserID();
-        TokenModel token = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/GenerateToken")
-                .then().statusCode(200)
-                .extract().as(TokenModel.class);
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Authorized");
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Login");
-
-        BooksModel books = given().get("/BookStore/v1/Books")
-                .then()
-                .extract().as(BooksModel.class);
-
-        List<BooksItem> boo = books.getBooks();
-
-        String isbn = boo.get(0).getIsbn();
-        CollectionOfIsbnsItem goodIsbn = new CollectionOfIsbnsItem();
-        goodIsbn.setIsbn(isbn);
-
-        AddListOfBooksModel bookIsbn = new AddListOfBooksModel();
-        bookIsbn.setUserId(UserId);
-        bookIsbn.setCollectionOfIsbns(List.of(goodIsbn));
-
-
-        given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
-                .body(bookIsbn)
-                .post("/BookStore/v1/Books");
-
-        BookModel book = given().auth().oauth2(token.getToken())
-                .queryParam("ISBN", isbn)
-                .get("/BookStore/v1/Book")
-                .then().statusCode(200)
-                .extract().as(BookModel.class);
-
+        BookModel book = bookService.getOneBook(isbn).should(hasStatusCode(200))
+                .as(BookModel.class);
         Assertions.assertEquals(isbn, book.getIsbn());
     }
 
     @Test
-    public void deleteOneUserBookTest(){
-        RegisterViewModel response = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/User")
-                .then().extract().as(RegisterViewModel.class);
+    public void deleteOneUserBookTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
 
+        String isbn = bookService.getAllBooks()
+                .as(BooksModel.class).getBooks().get(0).getIsbn();
 
-        String UserId = response.getUserID();
-        TokenModel token = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/GenerateToken")
-                .then().statusCode(200)
-                .extract().as(TokenModel.class);
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Authorized");
-
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Login");
-
-        BooksModel books = given().get("/BookStore/v1/Books")
-                .then()
-                .extract().as(BooksModel.class);
-
-        List<BooksItem> boo = books.getBooks();
-
-        String isbn = boo.get(0).getIsbn();
         CollectionOfIsbnsItem goodIsbn = new CollectionOfIsbnsItem();
         goodIsbn.setIsbn(isbn);
 
         AddListOfBooksModel bookIsbn = new AddListOfBooksModel();
-        bookIsbn.setUserId(UserId);
+        bookIsbn.setUserId(userId);
         bookIsbn.setCollectionOfIsbns(List.of(goodIsbn));
 
-        DeleteIsbnUserModel deleteIsbn = new DeleteIsbnUserModel(isbn, UserId);
+        BooksIsbnModel resIsbn = bookService.addUserBook(bookIsbn, token)
+                .should(hasStatusCode(201)).as(BooksIsbnModel.class);
 
+        DeleteIsbnUserModel deleteIsbn = new DeleteIsbnUserModel(isbn, userId);
 
-        given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
-                .body(deleteIsbn)
-                .post("/BookStore/v1/Books");
+        UserBookResultModel resultModel = bookService.deleteBook(deleteIsbn, token)
+                .should(hasStatusCode(204)).as(UserBookResultModel.class);
 
-        UserBookResultModel resultModel = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
-                .body(deleteIsbn)
-                .delete("/BookStore/v1/Book")
-                .then().statusCode(204)
-                .extract().as(UserBookResultModel.class);
         Assertions.assertEquals(isbn, resultModel.getIsbn());
-        Assertions.assertEquals(UserId, resultModel.getUserId());
+        Assertions.assertEquals(userId, resultModel.getUserId());
     }
 
     @Test
-    public void replacaUserIsbnTest(){
-        RegisterViewModel response = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/User")
-                .then().extract().as(RegisterViewModel.class);
+    public void replaceUserBookTest() {
+        UserModel user = getRandomUser();
+        String userId = userService.register(user).asUserId();
+        String token = userService.auth(user).asJwt();
 
+        BooksModel b = bookService.getAllBooks()
+                .as(BooksModel.class);
 
-        String UserId = response.getUserID();
-        TokenModel token = given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/GenerateToken")
-                .then().statusCode(200)
-                .extract().as(TokenModel.class);
+        String isbn = b.getBooks().get(0).getIsbn();
+        String isbnNew = b.getBooks().get(1).getIsbn();
 
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Authorized");
+//        String isbn = bookService.getAllBooks()
+//                .as(BooksModel.class).getBooks().get(0).getIsbn();
+//        String isbnNew = bookService.getAllBooks()
+//                .as(BooksModel.class).getBooks().get(1).getIsbn();
 
-        given().contentType(ContentType.JSON)
-                .body(user)
-                .post("/Account/v1/Login");
-
-        BooksModel books = given().get("/BookStore/v1/Books")
-                .then()
-                .extract().as(BooksModel.class);
-
-        List<BooksItem> boo = books.getBooks();
-
-        String isbn = boo.get(0).getIsbn();
-        String isbnNew = boo.get(1).getIsbn();
         CollectionOfIsbnsItem goodIsbn = new CollectionOfIsbnsItem();
         goodIsbn.setIsbn(isbn);
 
         AddListOfBooksModel bookIsbn = new AddListOfBooksModel();
-        bookIsbn.setUserId(UserId);
+        bookIsbn.setUserId(userId);
         bookIsbn.setCollectionOfIsbns(List.of(goodIsbn));
 
-        ReplaceUserModel deleteIsbn = new ReplaceUserModel(UserId, isbnNew);
+        BooksIsbnModel resIsbn = bookService.addUserBook(bookIsbn, token)
+                .should(hasStatusCode(201)).as(BooksIsbnModel.class);
 
+        ReplaceUserModel deleteIsbn = new ReplaceUserModel(userId, isbnNew);
 
-        given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
-                .body(bookIsbn)
-                .post("/BookStore/v1/Books");
 
 //        RegisterViewModel newBook = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
 //                .pathParam("ISBN", isbn)
@@ -297,7 +176,7 @@ public class BookStoreTests {
 //                .extract().as(RegisterViewModel.class);
 //        Assertions.assertEquals(isbnNew, newBook.getBooks().get(0).getIsbn());
 
-        List<BooksItem> newBook = given().contentType(ContentType.JSON).auth().oauth2(token.getToken())
+        List<BooksItem> newBook = given().contentType(ContentType.JSON).auth().oauth2(token)
                 .pathParam("ISBN", isbn)
                 .body(deleteIsbn)
                 .put("/BookStore/v1/Books/{ISBN}")
@@ -305,6 +184,4 @@ public class BookStoreTests {
                 .extract().jsonPath().getList("books", BooksItem.class);
         Assertions.assertEquals(isbnNew, newBook.get(0).getIsbn());
     }
-
-
 }

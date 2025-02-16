@@ -1,10 +1,15 @@
 package org.example.demoqa.api.utils;
 import lombok.Data;
+import org.example.demoqa.api.models.accountmodels.UserModel;
 
 import java.util.Random;
 
+import static org.example.demoqa.api.utils.AccountUtils.PasswordGenerator.generatePassword;
+
 
 public class AccountUtils {
+    private static Random random;
+
     public class PasswordGenerator {
 
         // Наборы символов
@@ -58,7 +63,11 @@ public class AccountUtils {
             }
             return new String(characters);
         }
+    }
 
-
+    public static UserModel getRandomUser() {
+        random = new Random();
+        Integer randomNumber = Math.abs(random.nextInt());
+        return UserModel.builder().userName("serg" + randomNumber).password(generatePassword()).build();
     }
 }
