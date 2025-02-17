@@ -5,44 +5,44 @@ import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.filter.log.ResponseLoggingFilter;
 import io.restassured.http.ContentType;
 import org.example.demoqa.api.models.accountmodels.UserModel;
-import org.example.demoqa.api.models.accountmodels.RegisterViewModel;
-import org.example.demoqa.api.models.accountmodels.TokenModel;
 import org.example.demoqa.api.models.bookstoremodels.*;
 import org.example.demoqa.api.services.BookService;
 import org.example.demoqa.api.services.UserService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import java.util.*;
-
-
 import static io.restassured.RestAssured.given;
 import static org.example.demoqa.api.utils.AccountUtils.PasswordGenerator.generatePassword;
 import static org.example.demoqa.api.utils.AccountUtils.getRandomUser;
-import static org.hamcrest.Matchers.hasSize;
-import static org.example.demoqa.api.assertions.Conditions.hasMessage;
 import static org.example.demoqa.api.assertions.Conditions.hasStatusCode;
 
 public class BookStoreTests {
-    private static Random random;
+
     private static UserService userService;
     private static BookService bookService;
+    private UserModel user;
+
+    @BeforeEach
+    public void initUser() {
+        user = getRandomUser();
+    }
 
     @BeforeAll
     public static void setUp() {
         RestAssured.baseURI = "https://demoqa.com/";
         RestAssured.filters(new RequestLoggingFilter(), new ResponseLoggingFilter());
-        random = new Random();
+
         userService = new UserService();
         bookService = new BookService();
     }
 
-    int randomNumber = Math.abs(random.nextInt());
-    UserModel user = UserModel.builder()
-            .userName("serg" + randomNumber)
-            .password(generatePassword())
-            .build();
+//    int randomNumber = Math.abs(random.nextInt());
+//    UserModel user = UserModel.builder()
+//            .userName("serg" + randomNumber)
+//            .password(generatePassword())
+//            .build();
 
 
     @Test
@@ -58,7 +58,6 @@ public class BookStoreTests {
 
     @Test
     public void postBookTest() {
-        UserModel user = getRandomUser();
         String userId = userService.register(user).asUserId();
         String token = userService.auth(user).asJwt();
 
@@ -80,7 +79,6 @@ public class BookStoreTests {
 
     @Test
     public void deleteAllUserBooksTest() {
-        UserModel user = getRandomUser();
         String userId = userService.register(user).asUserId();
         String token = userService.auth(user).asJwt();
 
@@ -112,7 +110,6 @@ public class BookStoreTests {
 
     @Test
     public void deleteOneUserBookTest() {
-        UserModel user = getRandomUser();
         String userId = userService.register(user).asUserId();
         String token = userService.auth(user).asJwt();
 
@@ -140,7 +137,6 @@ public class BookStoreTests {
 
     @Test
     public void replaceUserBookTest() {
-        UserModel user = getRandomUser();
         String userId = userService.register(user).asUserId();
         String token = userService.auth(user).asJwt();
 

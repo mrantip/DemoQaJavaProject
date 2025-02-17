@@ -6,8 +6,6 @@ import org.example.demoqa.api.models.accountmodels.TokenModel;
 import org.example.demoqa.api.models.accountmodels.UserModel;
 import org.example.demoqa.api.models.accountmodels.UserToken;
 
-import java.util.HashMap;
-import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 

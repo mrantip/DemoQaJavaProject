@@ -8,7 +8,7 @@ import static org.example.demoqa.api.utils.AccountUtils.PasswordGenerator.genera
 
 
 public class AccountUtils {
-    private static Random random;
+    public static Random random = new Random();
 
     public class PasswordGenerator {
 
