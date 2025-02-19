@@ -1,33 +1,27 @@
 package com.example.threadqa.ui;
 
+import org.example.threadqa.ui.pages.MainPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import static org.awaitility.Awaitility.await;
 
-public class ElementsTests {
-    private WebDriver driver;
+public class ElementsTests extends BaseTest{
+//    private WebDriver driver;
 
-
-    @BeforeEach
-    public void setUp() {
-        driver = new ChromeDriver();
-        driver.manage().window().setSize(new Dimension(1920, 1080));
-        driver.manage().timeouts().pageLoadTimeout(Duration.ofSeconds(20));
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(20));
-    }
-
-    @AfterEach
-    public void tearDown() {
-        driver.close();
-    }
 
     @Test
     public void fillTextBoxTest(){
-        driver.get("http://localhost/litecart/en/");
+        MainPage mainPage = new MainPage(driver);
+        mainPage.goToElements();
+
+
     }
 }
