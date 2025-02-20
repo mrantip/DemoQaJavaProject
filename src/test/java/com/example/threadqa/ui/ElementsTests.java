@@ -1,6 +1,8 @@
 package com.example.threadqa.ui;
 
+import org.example.threadqa.ui.pages.ElementsPage;
 import org.example.threadqa.ui.pages.MainPage;
+import org.example.threadqa.ui.pages.elementspage.TextBoxPage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -21,6 +23,9 @@ public class ElementsTests extends BaseTest{
     public void fillTextBoxTest(){
         MainPage mainPage = new MainPage(driver);
         mainPage.goToElements();
+        ElementsPage elementsPage = new ElementsPage(driver);
+        TextBoxPage textBoxPage = new TextBoxPage(driver);
+        elementsPage.goToTextBox().fillFullName().fillEmail().fillCurrentAddress().fillPermanentAddress().submitButton();
 
 
     }
