@@ -1,18 +1,9 @@
 package com.example.threadqa.ui;
 
-import org.example.threadqa.ui.pages.ElementsPage;
-import org.example.threadqa.ui.pages.MainPage;
-import org.example.threadqa.ui.pages.elementspage.TextBoxPage;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.example.threadqa.ui.pages.elementspage.ElementsPageT;
+import org.example.threadqa.ui.pages.MainPageT;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 import static org.awaitility.Awaitility.await;
 
 public class ElementsTests extends BaseTest{
@@ -21,10 +12,9 @@ public class ElementsTests extends BaseTest{
 
     @Test
     public void fillTextBoxTest(){
-        MainPage mainPage = new MainPage(driver);
+        MainPageT mainPage = new MainPageT(driver);
         mainPage.goToElements();
-        ElementsPage elementsPage = new ElementsPage(driver);
-        TextBoxPage textBoxPage = new TextBoxPage(driver);
+        ElementsPageT elementsPage = new ElementsPageT(driver);
         elementsPage.goToTextBox().fillFullName().fillEmail().fillCurrentAddress().fillPermanentAddress().submitButton();
 
 

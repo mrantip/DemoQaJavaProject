@@ -1,8 +1,7 @@
-package org.example.threadqa.ui.pages;
+package org.example.demoqa.ui.pages.elementspages;
 
-import lombok.Data;
-import lombok.Getter;
-import org.example.threadqa.ui.pages.elementspage.TextBoxPage;
+import org.example.demoqa.ui.pages.BasePage;
+
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
@@ -17,5 +16,4 @@ public class ElementsPage extends BasePage {
         driver.findElement(textBox).click();
         return new TextBoxPage(driver);
     }
-
 }

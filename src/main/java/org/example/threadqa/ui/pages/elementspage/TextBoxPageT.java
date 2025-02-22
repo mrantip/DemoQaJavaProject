@@ -1,13 +1,12 @@
 package org.example.threadqa.ui.pages.elementspage;
 
 import com.github.javafaker.Faker;
-import lombok.Getter;
-import org.example.threadqa.ui.pages.BasePage;
+import org.example.threadqa.ui.pages.BasePageT;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 
 
-public class TextBoxPage extends BasePage {
+public class TextBoxPageT extends BasePageT {
     private final By fullName = By.cssSelector("input[id='userName']");
     private final By email = By.xpath("//input[@type='email']");
     private final By currentAddress = By.cssSelector("textarea[id='currentAddress']");
@@ -16,28 +15,28 @@ public class TextBoxPage extends BasePage {
 
     Faker faker = new Faker();
 
-    public TextBoxPage(WebDriver driver) {
+    public TextBoxPageT(WebDriver driver) {
         super(driver);
     }
 
 
 
-    public TextBoxPage fillFullName() {
+    public TextBoxPageT fillFullName() {
         driver.findElement(fullName).sendKeys(faker.name().fullName());
         return this;
     }
 
-    public TextBoxPage fillEmail() {
+    public TextBoxPageT fillEmail() {
         driver.findElement(email).sendKeys(faker.internet().emailAddress());
         return this;
     }
 
-    public TextBoxPage fillCurrentAddress() {
+    public TextBoxPageT fillCurrentAddress() {
         driver.findElement(currentAddress).sendKeys(faker.address().fullAddress());
         return this;
     }
 
-    public TextBoxPage fillPermanentAddress() {
+    public TextBoxPageT fillPermanentAddress() {
         driver.findElement(permanentAddress).sendKeys(faker.address().fullAddress());
         return this;
     }
